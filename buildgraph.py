@@ -18,15 +18,15 @@ with open("units.json", encoding='utf-8') as file:
 has_school = URIRef(ns['has_school'])
 has_board = URIRef(ns['has_board'])
 has_mode = URIRef(ns['has_mode'])
-desc_of = URIRef(ns['desc_of'])
-outcome_of = URIRef(ns['outcome_of'])
+desc = URIRef(ns['desc'])
+has_outcome = URIRef(ns['has_outcome'])
 has_prereq = URIRef(ns['has_prereq'])
-level_of = URIRef(ns['level_of'])
-credit_of = URIRef(ns['credit_of'])
+level = URIRef(ns['level'])
+credit = URIRef(ns['credit'])
 assessment_of = URIRef(ns['assessment_of'])
-advisable_of = URIRef(ns['advisable_of'])
+has_advisable = URIRef(ns['has_advisable'])
 contacttype = URIRef(ns['contacttype'])
-contact_of = URIRef(ns['contact_of'])
+has_contact = URIRef(ns['has_contact'])
 hours = URIRef(ns['hours'])
 unit = URIRef(ns['unit'])
 course = URIRef(ns['course'])
@@ -45,8 +45,8 @@ for maj in m:
         g.add((imajor, has_board, board))
         mode = URIRef(ns[m[maj]['delivery_mode'].replace(" ","_")])
         g.add((imajor, has_mode, mode))
-        g.add((imajor, desc_of, Literal(m[maj]['description'])))
-        g.add((imajor, outcome_of, Literal(m[maj]['outcomes'])))
+        g.add((imajor, desc, Literal(m[maj]['description'])))
+        g.add((imajor, has_outcome, Literal(m[maj]['outcomes'])))
         if ('prerequisites' in m[maj] ):
                 g.add((imajor, has_prereq, Literal(m[maj]['prerequisites'])))
         for course in m[maj]['courses']:
@@ -73,11 +73,11 @@ for uniti in u:
         g.add((iunit, has_board, board))
         mode = URIRef(ns[u[uniti]['delivery_mode'].replace(" ","_")])
         g.add((iunit, has_mode, mode))
-        g.add((iunit, level_of, Literal(int(u[uniti]['level']))))
-        g.add((iunit, desc_of, Literal(u[uniti]['description'])))
-        g.add((iunit, credit_of, Literal(int(u[uniti]['credit']))))
+        g.add((iunit, level, Literal(int(u[uniti]['level']))))
+        g.add((iunit, desc, Literal(u[uniti]['description'])))
+        g.add((iunit, credit, Literal(int(u[uniti]['credit']))))
         if ('outcomes' in u[uniti] ):
-                g.add((iunit, outcome_of, Literal(u[uniti]['outcomes'])))
+                g.add((iunit, has_outcome, Literal(u[uniti]['outcomes'])))
         for assess in u[uniti]['assessment']:
                 g.add((iunit, assessment_of, Literal(assess)))
         if ('prerequisites_text' in u[uniti] ):
@@ -94,11 +94,11 @@ for uniti in u:
         if ('advisable_prior_study' in u[uniti] ):
                 for un in u[uniti]["advisable_prior_study"]:
                         uni = URIRef(ns[un])
-                        g.add((iunit, advisable_of, uni))
+                        g.add((iunit, has_advisable, uni))
         if ('contact' in u[uniti] ):
                 for entry in u[uniti]['contact']:
                         contact = BNode()
-                        g.add((iunit, contact_of, contact))
+                        g.add((iunit, has_contact, contact))
                         g.add((contact, hours, Literal(int(u[uniti]['contact'][entry]))))
                         g.add((contact, contacttype, Literal(entry)))
         break
