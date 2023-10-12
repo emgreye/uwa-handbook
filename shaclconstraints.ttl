@@ -1,0 +1,36 @@
+@prefix ns: <https://www.example.com/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ns:MajorShape a sh:NodeShape ;
+  sh:targetClass ns:major ;
+  sh:property [
+    sh:path ns:has_prereq ;
+    sh:class ns:unit ;
+    sh:minCount 1 
+  ] ; 
+  sh:property [
+    sh:path ns:has_unit ;
+    sh:class ns:unit ;
+  ] .
+
+ns:UnitShape a sh:NodeShape ;
+  sh:targetClass ns:unit ;
+
+  sh:prefixes [
+    sh:declare [
+      sh:prefix
+    ];
+  ];
+  sh:property [
+    sh:path ns:has_prereq ;
+    sh:nodeKind sh:IRI ;
+    sh:property [
+      sh:path ns:level ;
+      
+    ]
+  ] ;
+  sh:property [
+    sh:path ns:has_prereq ;
+    sh:disjoint ns:unit ;
+  ] .
