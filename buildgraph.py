@@ -137,6 +137,8 @@ assessment_of = URIRef(ns['assessment_of'])
 has_advisable = URIRef(ns['has_advisable'])
 contacttype = URIRef(ns['contacttype'])
 has_contact = URIRef(ns['has_contact'])
+has_code = URIRef(ns['has_code'])
+has_text = URIRef(ns['has_text'])
 hours = URIRef(ns['hours'])
 unit = URIRef(ns['unit'])
 course = URIRef(ns['course'])
@@ -175,6 +177,7 @@ for maj in m:
 
 for uniti in u:
         iunit = URIRef((ns[u[uniti]['code'].replace(" ","_")]))
+        g.add((iunit, has_code, iunit))
         g.add((iunit, RDF.type, unit))
         g.add((iunit, FOAF.name, Literal(u[uniti]['title'])))
         school = URIRef(ns[u[uniti]['school'].replace(" ","_")])
@@ -191,18 +194,17 @@ for uniti in u:
                         g.add((iunit, has_outcome, Literal(outcome)))
         for assess in u[uniti]['assessment']:
                 g.add((iunit, assessment_of, Literal(assess)))
-        if ('prerequisites_text' in u[uniti] ):
-                g.add((iunit, has_prereq, Literal(u[uniti]['prerequisites_text'])))
+        if ('text' in u[uniti] ):
+                g.add((iunit, has_text, Literal(u[uniti]['text'])))
         if ('note' in u[uniti] ):
                 g.add((iunit, has_prereq, Literal(u[uniti]['note'])))
-        if ('text' in u[uniti] ):
-                g.add((iunit, has_prereq, Literal(u[uniti]['text'])))
-        if ('prerequisities_cnf' in u[uniti] ):
+        if ('prerequisites_text' in u[uniti] ):
+                g.add((iunit, has_prereq, Literal(u[uniti]['prerequisites_text'])))
+        if ('prerequisites_cnf' in u[uniti] ):
                 for lis in u[uniti]['prerequisites_cnf']:
                         for un in lis:
                                 uni = URIRef(ns[un])
                                 g.add((iunit, has_prereq, uni))
-                                g.add((uni, RDF.type, unit))
         if ('advisable_prior_study' in u[uniti] ):
                 for un in u[uniti]["advisable_prior_study"]:
                         uni = URIRef(ns[un])
@@ -214,7 +216,6 @@ for uniti in u:
                         g.add((contact, hours, Literal(int(u[uniti]['contact'][entry]))))
                         g.add((contact, contacttype, Literal(entry)))
 
-
 # print(g.serialize(format="turtle"))
 g.serialize(destination = 'handbook.ttl', format="ttl")
 
@@ -223,11 +224,21 @@ def pretty(uri): return uri.split("/")[-1]
 sg = Graph()
 with open("shaclconstraints.ttl") as f:
     sg.parse(data=f.read(), format='ttl')
+'''    
+gc = Graph()
+with open("handbook copy.ttl") as f:
+    gc.parse(data=f.read(), format='ttl')
+'''
 
 results = validate(
-g,
-sg=sg,
-inference='both'
-)
-(conforms, results_graph, results_text) = results
-print(results_text)
+    g,
+    shacl_graph=sg,
+    data_graph_format="ttl",
+    shacl_graph_format="ttl",
+    inference="rdfs",
+    serialize_report_graph="ttl",
+    )
+
+conforms, report_graph, report_text = results
+
+print(report_text)

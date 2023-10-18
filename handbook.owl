@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://www.example.org/my_ontology.owl"
+         xmlns="http://www.example.org/my_ontology.owl#">
+
+<owl:Ontology rdf:about="http://www.example.org/my_ontology.owl"/>
+
+<owl:ObjectProperty rdf:about="#has_board">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Unit"/>
+  <rdfs:domain rdf:resource="#Major"/>
+  <rdfs:range rdf:resource="#Board"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_prereq">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+  <rdfs:domain rdf:resource="#Unit"/>
+  <rdfs:domain rdf:resource="#Major"/>
+  <rdfs:range rdf:resource="#Unit"/>
+  <rdfs:range rdf:resource="#Course"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_school">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="#Unit"/>
+  <rdfs:domain rdf:resource="#Major"/>
+  <rdfs:range rdf:resource="#School"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_mode">
+  <rdfs:domain rdf:resource="#Unit"/>
+  <rdfs:domain rdf:resource="#Major"/>
+  <rdfs:range rdf:resource="#Mode"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_bridge">
+  <rdfs:domain rdf:resource="#Major"/>
+  <rdfs:range rdf:resource="#Unit"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_unit">
+  <rdfs:domain rdf:resource="#Major"/>
+  <rdfs:range rdf:resource="#Unit"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_advisable">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+  <rdfs:domain rdf:resource="#Unit"/>
+  <rdfs:range rdf:resource="#Unit"/>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="#level">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#credit">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#desc">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#has_text">
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#has_outcome">
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#assessment_of">
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#contacttype">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hour">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:Class rdf:about="#Shape">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Unit">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Major">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Board">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#School">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Mode">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Course">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+
+</rdf:RDF>

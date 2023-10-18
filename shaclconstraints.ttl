@@ -1,36 +1,59 @@
 @prefix ns: <https://www.example.com/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 ns:MajorShape a sh:NodeShape ;
   sh:targetClass ns:major ;
   sh:property [
-    sh:path ns:has_prereq ;
+    sh:path ns:has_unit ;
     sh:class ns:unit ;
-    sh:minCount 1 
+    sh:minCount 1 ;
+    sh:severity sh:violation ;
+    sh:message "Major needs at least 1 unit."
   ] ; 
   sh:property [
     sh:path ns:has_unit ;
     sh:class ns:unit ;
+    sh:severity sh:violation ;
+    sh:message "Major should not require over 40 hours per week."
   ] .
 
-ns:UnitShape a sh:NodeShape ;
+ns:UnitShape
+  a sh:NodeShape ;
   sh:targetClass ns:unit ;
-
-  sh:prefixes [
-    sh:declare [
-      sh:prefix
-    ];
-  ];
   sh:property [
-    sh:path ns:has_prereq ;
-    sh:nodeKind sh:IRI ;
-    sh:property [
+        sh:path ns:has_prereq ;
+        sh:disjoint ns:has_code ;
+        sh:property [
+          sh:path ns:level ;
+          sh:disjoint ns:level ;
+    ] ;
+  sh:property [
       sh:path ns:level ;
-      
-    ]
-  ] ;
-  sh:property [
-    sh:path ns:has_prereq ;
-    sh:disjoint ns:unit ;
+      sh:datatype xsd:integer ;
+      sh:severity sh:Violation ;
+      sh:message "Level not integer" ;
+      ]
   ] .
+
+ns:has_prereq
+    a sh:PropertyShape ;
+    sh:path ns:has_prereq ;
+    sh:node ns:UnitShape ;
+    sh:severity sh:Violation ;
+    sh:message "Prerequisite unit level must be less than the current unit level" ;
+    sh:condition [
+        sh:lessThan ns:level ;
+        sh:severity sh:Violation ;
+        sh:message "kjiw" ;
+    ] .
+
+ns:Unit
+    a sh:NodeShape ;
+    sh:property [
+        sh:path ns:level ;
+        sh:datatype xsd:integer ;
+        sh:severity sh:Violation ;
+        sh:message "Level not integer" ;
+    ] .
