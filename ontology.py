@@ -1,11 +1,9 @@
 from owlready2 import *
-onto = get_ontology("http://www.example.org/my_ontology.owl")
+import json
 
-graph = default_world.as_rdflib_graph()
+onto = get_ontology("http://www.example.org/handbook.owl")
 
 with onto:
-  class Shape(Thing):
-    pass
   class Unit(Thing):
     pass
   class Major(Thing):
@@ -20,12 +18,12 @@ with onto:
     pass
 
   class has_board(ObjectProperty, FunctionalProperty):
-    domain = [Unit, Major]
+    domain =[Unit | Major]
     range = [Board]
 
-  class has_prereq(ObjectProperty, TransitiveProperty, AsymmetricProperty):
-    domain = [Unit, Major]
-    range = [Unit, Course]
+  class has_prereq(ObjectProperty, TransitiveProperty):
+    domain = [Unit | Major]
+    range = [Unit | Course]
 
   class level(DataProperty, FunctionalProperty):
     range = [int]
@@ -34,11 +32,11 @@ with onto:
     range = [int]
 
   class has_school(ObjectProperty, FunctionalProperty):
-    domain = [Unit, Major]
+    domain = [Unit | Major]
     range = [School]
 
   class has_mode(ObjectProperty):
-    domain = [Unit, Major]
+    domain = [Unit | Major]
     range = [Mode]
 
   class desc(DataProperty, FunctionalProperty):
@@ -48,6 +46,7 @@ with onto:
     range = [str]
 
   class has_outcome(DataProperty):
+    domain = [Unit | Major]
     range = [str]
 
   class has_bridge(ObjectProperty):
@@ -58,8 +57,7 @@ with onto:
     domain = [Major]
     range = [Unit]  
 
-  class has_unit_outcome(PropertyChain):
-    chain = [has_unit, has_outcome]
+  has_unit_outcome = PropertyChain([has_unit, has_outcome])
 
   class has_unit_text(PropertyChain):
     chain = [has_unit, has_text]
@@ -67,7 +65,7 @@ with onto:
   class assessment_of(DataProperty):
     range = [str]
 
-  class has_advisable(ObjectProperty, TransitiveProperty, AsymmetricProperty):
+  class has_advisable(ObjectProperty, TransitiveProperty):
     domain = [Unit]
     range = [Unit]
     #chain = [has_prereq, has_advisable]
@@ -77,6 +75,55 @@ with onto:
 
   class hour(FunctionalProperty, DataProperty):
     range = [int]
+
+  with open("units.json", encoding='utf-8') as file:
+        u = json.load(file)
+
+  with open("majors.json", encoding='utf-8') as file:
+        m = json.load(file)
+
+
+
+  for uniti in u:
+    unit = Unit(uniti, namespace = onto)
+    if ('outcomes' in u[uniti] ):
+      for outcome in u[uniti]['outcomes']:
+        unit.has_outcome.append(outcome)
+    if ('prerequisites_cnf' in u[uniti] ):
+      for prer in u[uniti]['prerequisites_cnf']:
+        for pre in prer:
+          unit.has_prereq.append(Unit(pre, namespace = onto))
+    if ('assessment' in u[uniti] ):
+      for assess in u[uniti]['assessment']:
+        unit.assessment_of.append(assess)
+    if ('text' in u[uniti] ):
+      for text in u[uniti]['text']:
+        unit.has_text.append(text)
+
+  for majori in m:
+    major = Major(majori, namespace = onto)
+    for unit in m[majori]['units']:
+      unitv = Unit(unit, namespace = onto)
+      for outcome in unitv.has_outcome:
+        # manually add unit outcome because chain property doesn't work
+        major.has_outcome.append(outcome)
+      for text in unitv.has_text:
+        # manually add unit text because chain property doesn't work
+        major.has_text.append(text)
+      major.has_unit.append(Unit(unit, namespace = onto))
+    if ('outcomes' in m[majori] ):
+      for outcome in m[majori]['outcomes']:
+        major.has_outcome.append(outcome)
+
+  sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=True)
+
+  for i in Major.instances():
+    print(i)
+    try: print(i.has_text)
+    except: print("No texts")
+
+  #for i in Unit.instances():
+  #  print(i.assessment_of)
 
 
 onto.save(file = "handbook.owl", format = "rdfxml")
