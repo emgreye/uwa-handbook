@@ -15,10 +15,6 @@ ns:MajorShape a sh:NodeShape ;
   sh:property [
     sh:path ns:has_unit ;
     sh:class ns:unit ;
-    sh:property [
-      sh:path ns:weeklyhours ;
-      sh:lessThan 10 ;
-    ] ;
     sh:severity sh:violation ;
     sh:message "Major should not require over 40 hours per week."
   ] .
