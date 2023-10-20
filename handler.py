@@ -115,7 +115,7 @@ with open("shaclconstraints.ttl") as f:
     sg.parse(data=f.read(), format='ttl')
   
 g = Graph()
-with open("handbook copy.ttl") as f:
+with open("handbook copy.ttl", encoding="utf8") as f:
     g.parse(data=f.read(), format='ttl')
 
 def check_constraints(graph, constraints):
