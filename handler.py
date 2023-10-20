@@ -1,5 +1,18 @@
 from rdflib import Graph, Literal, RDF, URIRef, BNode, RDFS, Namespace
 from pyshacl import validate
+from rdflib import namespace
+import re
+
+class bcolours:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 def query1(graph):
 	units_6_or_more_outcomes = """
@@ -109,6 +122,57 @@ def query4(word, graph):
 	for row in graph.query(contains_keyword.replace("word", value)):
 			print(f"{row.unit} contains the phrase '{value}'.")
 
+def addnewdata(graph, subj, pred, obj):
+	query = f"""
+	INSERT DATA {{
+		ns:{subj} ns:{pred} ns:{obj} .
+	}}
+	"""
+	graph.update(query)
+	
+	find = f"""
+	SELECT ?s
+	WHERE {{
+		?s ns:{pred} ns:{obj} .
+	}}
+	"""
+	print(f"{bcolours.OKGREEN}({subj},{pred},{obj}) has been added.{bcolours.ENDC}")
+
+def deleteentity(graph, entity):
+	delete = f"""
+	DELETE
+	WHERE {{
+		ns:{entity} ?pred ?obj . 
+	}}
+	"""
+	delete2 = f"""
+	DELETE
+	WHERE {{
+		?subj ?pred {entity} . 
+	}}
+	"""
+	graph.query(delete)
+	graph.query(delete2)
+	print(f"{entity} has been deleted.")
+
+def deletepredicate(graph, pred):
+	delete = f"""
+	DELETE
+	WHERE {{
+		?subj ns:{pred} ?obj . 
+	}}
+	"""
+	graph.query(delete)
+	print(f"{pred} has been deleted.")
+
+def deleterelation(graph, subj, pred, obj):
+	delete = f"""
+	DELETE DATA {{
+		ns:{subj} ns:{pred} ns:{obj} . 
+	}}
+	"""
+	graph.query(delete)
+	print(f"({subj},{pred},{obj}) has been deleted.")
 
 sg = Graph()
 with open("shaclconstraints.ttl") as f:
@@ -117,6 +181,9 @@ with open("shaclconstraints.ttl") as f:
 g = Graph()
 with open("handbook copy.ttl", encoding="utf8") as f:
     g.parse(data=f.read(), format='ttl')
+url = "https://www.example.com/"
+ns = Namespace(url)
+g.bind("ns", ns)
 
 def check_constraints(graph, constraints):
 	results = validate(
@@ -130,13 +197,6 @@ def check_constraints(graph, constraints):
 	conforms, report_graph, report_text = results
 	return report_text
 
-def update_graph():
-	print("1")
-
-def handle_query():
-	print("Welcome to the query handler! Please select one of the following options:\n")
-	print(">To add data/relations press 0 \n>To update existing data/relations press 1 \n>To remove data/relations press 2")
-
 def input_handler(max):
 	user_input = input()
 	try:
@@ -148,11 +208,53 @@ def input_handler(max):
 		user_input = input()
 	return user_input
 
+def string_input_handler(count):
+	user_input = input()
+	while (user_input.count(', ') != count-1):
+		print(f"Please enter a string with {count} comma-space-seperated values")
+		user_input = input()
+	new_input = re.sub(r'[^a-zA-Z0-9, ]', '', user_input)
+	return new_input
+
+def update_graph():
+	input = -1
+	visited_update = False
+	while (input != 'q'):
+		if not visited_update:
+			print(f"{bcolours.UNDERLINE}Welcome to the graph updater!{bcolours.ENDC} Please select one of the following options:\n")
+			visited_update = True
+		else:
+			print(f"{bcolours.UNDERLINE}Welcome back to the graph updater!{bcolours.ENDC} Please select one of the following options:\n")
+		print(f">To add new data {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To read data {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To update data {bcolours.BOLD}enter 2{bcolours.ENDC} \n>To delete data {bcolours.BOLD}enter 3{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+		input = input_handler(3)
+		if input == '0':
+			print("Please specify the triple you'd like to add using the following format:")
+			print(f"{bcolours.OKCYAN}subject, predicate, object{bcolours.ENDC}")
+			triple = string_input_handler(3).split(", ")
+			addnewdata(g, triple[0], triple[1], triple[2])
+
+
+def handle_query():
+	input = -1
+	visited_query = False
+	while (input != 'q'):
+		if not visited_query:
+			print(f"{bcolours.UNDERLINE}Welcome to the query handler!{bcolours.ENDC} Please select one of the following options:\n")
+			visited_query = True
+		else:
+			print(f"{bcolours.UNDERLINE}Welcome back to the query handler!{bcolours.ENDC} Please select one of the following options:\n")
+	print(f">To add data/relations {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To update existing data/relations {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To remove data/relations {bcolours.BOLD}enter 2{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+
 def prompt_user():
 	input = -1
+	visited = False
 	while input != "q":
-		print("Welcome to the Hanbook Handler! Please select one of the following options:\n")
-		print(">To make updates to the graph press 0 \n>To execute queries press 1 \n>To check constraints press 2 \n>To quit press q")
+		if (not visited):
+			print(f"{bcolours.UNDERLINE}Welcome to the Hanbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
+			visited = True
+		else:
+			print(f"{bcolours.UNDERLINE}Welcome back to the Hanbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
+		print(f">To make updates to the graph {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To execute queries {bcolours.BOLD}enter 1 {bcolours.ENDC}\n>To check constraints {bcolours.BOLD}enter 2 {bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
 		input = input_handler(2)
 		if input == "0":
 			update_graph()
