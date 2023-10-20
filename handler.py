@@ -161,6 +161,9 @@ def prompt_user():
 			report = check_constraints(g,sg)
 			print("Here is your report!\n")
 			print(report)
+		elif
+		else:
+			print("Bad Input, please try again\n")
   
 # Updating Graph
 prompt_user()
