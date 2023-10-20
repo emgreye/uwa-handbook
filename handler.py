@@ -139,25 +139,28 @@ def handle_query():
 
 def input_handler(max):
 	user_input = input()
-	while not 0 <= int(user_input) <= max:
-		print("Input out of bounds, please enter a number between 0 and {max}")
+	x = user_input.isdigit
+	while not x:
+		print("Input out of bounds, please enter a number between 0 and {max}, or q")
 		user_input = input()
 	return user_input
 
 def prompt_user():
-	print("Welcome to the Hanbook Handler! Please select one of the following options:\n")
-	print(">To make updates to the graph press 0 \n>To execute queries press 1 \n>To check constraints press 2 \n>To quit press q")
-	input = input_handler(2)
-	if input == "0":
-		update_graph()
-	elif(input == "1"):
-		handle_query()
-	elif(input == "2"):
-		# Checking Constraints
-		print("Checking Constraints...\n")
-		report = check_constraints(g,sg)
-		print("Here is your report!\n")
-		print(report)
+	input = -1
+	while input != "q":
+		print("Welcome to the Hanbook Handler! Please select one of the following options:\n")
+		print(">To make updates to the graph press 0 \n>To execute queries press 1 \n>To check constraints press 2 \n>To quit press q")
+		input = input_handler(2)
+		if input == "0":
+			update_graph()
+		elif(input == "1"):
+			handle_query()
+		elif(input == "2"):
+			# Checking Constraints
+			print("Checking Constraints...\n")
+			report = check_constraints(g,sg)
+			print("Here is your report!\n")
+			print(report)
   
 # Updating Graph
 prompt_user()
