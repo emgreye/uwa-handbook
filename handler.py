@@ -1,7 +1,5 @@
 from rdflib import Graph, Literal, RDF, URIRef, BNode, RDFS, Namespace
-from rdflib.namespace import FOAF, RDFS, RDF
 from pyshacl import validate
-import json
 
 def query1(graph):
 	units_6_or_more_outcomes = """
@@ -65,7 +63,6 @@ WHERE {
 					?pre rdf:type ns:unit .
 			}
 	"""
-	#the above doesn't work because some pre-requisites are not units
 
 	for row in graph.query(level_3_full):
 		print(f"{row.unit} has no exams")
@@ -121,18 +118,49 @@ g = Graph()
 with open("handbook copy.ttl") as f:
     g.parse(data=f.read(), format='ttl')
 
-def pretty(uri): return uri.split("/")[-1]
-
-results = validate(
-    g,
-    shacl_graph=sg,
+def check_constraints(graph, constraints):
+	results = validate(
+    graph,
+    shacl_graph=constraints,
     data_graph_format="ttl",
     shacl_graph_format="ttl",
     inference="rdfs",
     serialize_report_graph="ttl",
     )
+	conforms, report_graph, report_text = results
+	return report_text
 
-conforms, report_graph, report_text = results
+def update_graph():
+	print("1")
 
-print(report_text)
+def handle_query():
+	print("Welcome to the query handler! Please select one of the following options:\n")
+	print(">To add data/relations press 0 \n>To update existing data/relations press 1 \n>To remove data/relations press 2")
+
+def input_handler(max):
+	user_input = input()
+	while not 0 <= int(user_input) <= max:
+		print("Input out of bounds, please enter a number between 0 and {max}")
+		user_input = input()
+	return user_input
+
+def prompt_user():
+	print("Welcome to the Hanbook Handler! Please select one of the following options:\n")
+	print(">To make updates to the graph press 0 \n>To execute queries press 1 \n>To check constraints press 2 \n>To quit press q")
+	input = input_handler(2)
+	if input == "0":
+		update_graph()
+	elif(input == "1"):
+		handle_query()
+	elif(input == "2"):
+		# Checking Constraints
+		print("Checking Constraints...\n")
+		report = check_constraints(g,sg)
+		print("Here is your report!\n")
+		print(report)
+  
+# Updating Graph
+prompt_user()
+
+
 
