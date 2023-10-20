@@ -242,7 +242,7 @@ with open("shaclconstraints.ttl") as f:
 gc = Graph()
 with open("handbook copy.ttl") as f:
     gc.parse(data=f.read(), format='ttl')
-'''
+
 
 
 results = validate(
@@ -257,4 +257,6 @@ results = validate(
 conforms, report_graph, report_text = results
 
 print(report_text)
+
+'''
 
