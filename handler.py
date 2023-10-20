@@ -139,9 +139,12 @@ def handle_query():
 
 def input_handler(max):
 	user_input = input()
-	x = user_input.isdigit
+	try:
+		x = 0 <= int(user_input) and int(user_input) <= max
+	except:
+		x = str(user_input) == "q"
 	while not x:
-		print("Input out of bounds, please enter a number between 0 and {max}, or q")
+		print(f"Input out of bounds, please enter a number between 0 and {max}, or q")
 		user_input = input()
 	return user_input
 
@@ -161,9 +164,6 @@ def prompt_user():
 			report = check_constraints(g,sg)
 			print("Here is your report!\n")
 			print(report)
-		elif
-		else:
-			print("Bad Input, please try again\n")
   
 # Updating Graph
 prompt_user()
