@@ -15,6 +15,10 @@ ns:MajorShape a sh:NodeShape ;
   sh:property [
     sh:path ns:has_unit ;
     sh:class ns:unit ;
+    sh:property [
+      sh:path ns:weeklyhours ;
+      sh:Max
+    ]
     sh:severity sh:violation ;
     sh:message "Major should not require over 40 hours per week."
   ] .
@@ -25,17 +29,21 @@ ns:UnitShape
   sh:property [
         sh:path ns:has_prereq ;
         sh:disjoint ns:has_code ;
-        sh:property [
+        sh:message "Cannot be own prerequisite" ;
+        sh:condition [
           sh:path ns:level ;
-          sh:disjoint ns:level ;
+          sh:lessThan ns:level ;
+          sh:severity sh:Violation ;
+          sh:message "Prerequisite unit level must be less than the current unit level" ;
+    ] ;
     ] ;
   sh:property [
       sh:path ns:level ;
       sh:datatype xsd:integer ;
       sh:severity sh:Violation ;
       sh:message "Level not integer" ;
-      ]
   ] .
+
 
 ns:has_prereq
     a sh:PropertyShape ;
@@ -46,7 +54,7 @@ ns:has_prereq
     sh:condition [
         sh:lessThan ns:level ;
         sh:severity sh:Violation ;
-        sh:message "kjiw" ;
+        sh:message "Level less" ;
     ] .
 
 ns:Unit

@@ -16,28 +16,29 @@ def query1(graph):
 			print(f"{row.unit} has {row.c} outcomes")
                         
 def query2(graph):
-	level_3_unit_no_exam_no_pre_req_exam = """
-	SELECT ?unit
-	WHERE {
-			?unit ns:level 3 .
-			FILTER NOT EXISTS {
-					SELECT ?unit ?assess
-					WHERE {
-							?unit ns:assessment_of ?assess .
-							FILTER (CONTAINS(?assess, "exam"))
-					} 
-			}
-			OPTIONAL {
-			?unit ns:has_prereq ?ppp . 
-					FILTER NOT EXISTS {
-					SELECT ?unit ?pre ?p_assess
-					WHERE {
-							?unit ns:has_prereq ?pre .
-							?pre ns:assessment_of ?p_assess .
-							FILTER (CONTAINS(?p_assess, "exam"))
-					} 
-			}
-	}
+	level_3_full = """
+SELECT ?unit
+WHERE {
+    ?unit ns:level 3 .
+    FILTER NOT EXISTS {
+        SELECT ?unit ?assess
+        WHERE {
+            ?unit ns:has_assessment ?assess .
+            FILTER (CONTAINS(?assess, "exam"))
+        }
+    }
+    OPTIONAL {
+        ?unit ns:has_prereq ?ppp . 
+        FILTER NOT EXISTS {
+            SELECT ?unit2 ?pre ?p_assess
+            WHERE {
+                ?unit2 ns:has_prereq ?pre .
+                ?pre ns:has_assessment ?p_assess .
+                FILTER (CONTAINS(?p_assess, "exam"))
+            }
+        }
+    }
+}
 
 	"""
 
@@ -48,7 +49,7 @@ def query2(graph):
 			FILTER NOT EXISTS {
 					SELECT ?unit ?assess
 					WHERE {
-							?unit ns:assessment_of ?assess .
+							?unit ns:has_assessment ?assess .
 							FILTER (CONTAINS(?assess, "exam"))
 					} 
 			}
@@ -66,7 +67,7 @@ def query2(graph):
 	"""
 	#the above doesn't work because some pre-requisites are not units
 
-	for row in graph.query(level_3_not_quite):
+	for row in graph.query(level_3_full):
 		print(f"{row.unit} has no exams")
                 
 def query3(graph):
@@ -133,19 +134,28 @@ has_bridge = URIRef(ns['has_bridge'])
 has_unit = URIRef(ns['has_unit'])
 level = URIRef(ns['level'])
 credit = URIRef(ns['credit'])
-assessment_of = URIRef(ns['assessment_of'])
+has_assessment = URIRef(ns['has_assessment'])
 has_advisable = URIRef(ns['has_advisable'])
 contacttype = URIRef(ns['contacttype'])
 has_contact = URIRef(ns['has_contact'])
 has_code = URIRef(ns['has_code'])
 has_text = URIRef(ns['has_text'])
 hours = URIRef(ns['hours'])
+part_of_course = URIRef(ns['part_of_course'])
+weeklyhours = URIRef(ns['weeklyhours'])
 unit = URIRef(ns['unit'])
 course = URIRef(ns['course'])
 major = URIRef(ns['major'])
+board = URIRef(ns['board'])
+school = URIRef(ns['school'])
+mode = URIRef(ns['mode'])
 g.add((unit, RDF.type, RDFS.Class))
 g.add((course, RDF.type, RDFS.Class))
 g.add((major, RDF.type, RDFS.Class))
+g.add((board, RDF.type, RDFS.Class))
+g.add((mode, RDF.type, RDFS.Class))
+g.add((school, RDF.type, RDFS.Class))
+
 
 for maj in m:
         imajor = URIRef(ns[m[maj]['code'].replace(" ","_")])
@@ -164,8 +174,8 @@ for maj in m:
                 g.add((imajor, has_prereq, Literal(m[maj]['prerequisites'])))
         for course in m[maj]['courses']:
                 prereq_course = URIRef(ns[course.replace(" ","_")])
-                g.add((imajor, has_prereq, prereq_course))
-                g.add((prereq_course, RDF.type, RDFS.Class))
+                g.add((imajor, part_of_course, prereq_course))
+                g.add((prereq_course, RDF.type, course))
         for bridge in m[maj]['bridging']:
                 prereq_course = URIRef(ns[bridge.replace(" ","_")])
                 g.add((imajor, has_bridge, prereq_course))
@@ -193,7 +203,7 @@ for uniti in u:
                 for outcome in u[uniti]['outcomes']:
                         g.add((iunit, has_outcome, Literal(outcome)))
         for assess in u[uniti]['assessment']:
-                g.add((iunit, assessment_of, Literal(assess)))
+                g.add((iunit, has_assessment, Literal(assess)))
         if ('text' in u[uniti] ):
                 g.add((iunit, has_text, Literal(u[uniti]['text'])))
         if ('note' in u[uniti] ):
@@ -210,11 +220,14 @@ for uniti in u:
                         uni = URIRef(ns[un])
                         g.add((iunit, has_advisable, uni))
         if ('contact' in u[uniti] ):
+                hours = 0
                 for entry in u[uniti]['contact']:
+                        hours += int(u[uniti]['contact'][entry])
                         contact = BNode()
                         g.add((iunit, has_contact, contact))
                         g.add((contact, hours, Literal(int(u[uniti]['contact'][entry]))))
                         g.add((contact, contacttype, Literal(entry)))
+                g.add((iunit, weeklyhours, Literal(hours)))
 
 # print(g.serialize(format="turtle"))
 g.serialize(destination = 'handbook.ttl', format="ttl")
@@ -230,6 +243,7 @@ with open("handbook copy.ttl") as f:
     gc.parse(data=f.read(), format='ttl')
 '''
 
+
 results = validate(
     g,
     shacl_graph=sg,
@@ -242,3 +256,4 @@ results = validate(
 conforms, report_graph, report_text = results
 
 print(report_text)
+

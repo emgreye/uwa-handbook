@@ -55,14 +55,17 @@ with onto:
 
   class has_unit(ObjectProperty):
     domain = [Major]
-    range = [Unit]  
+    range = [Unit] 
 
-  has_unit_outcome = PropertyChain([has_unit, has_outcome])
+  #class has_unit_outcome(DataProperty):
+  #  domain = [Major]
+  #  range = [str]
+  #  chain = [has_unit,has_outcome]
 
-  class has_unit_text(PropertyChain):
-    chain = [has_unit, has_text]
+  #class has_unit_text(PropertyChain([has_unit, [has_text]])):
+  #  pass
 
-  class assessment_of(DataProperty):
+  class has_assessment(DataProperty):
     range = [str]
 
   class has_advisable(ObjectProperty, TransitiveProperty):
@@ -95,7 +98,7 @@ with onto:
           unit.has_prereq.append(Unit(pre, namespace = onto))
     if ('assessment' in u[uniti] ):
       for assess in u[uniti]['assessment']:
-        unit.assessment_of.append(assess)
+        unit.has_assessment.append(assess)
     if ('text' in u[uniti] ):
       for text in u[uniti]['text']:
         unit.has_text.append(text)
@@ -119,11 +122,11 @@ with onto:
 
   for i in Major.instances():
     print(i)
-    try: print(i.has_text)
+    try: print(i.has_unit_text)
     except: print("No texts")
 
   #for i in Unit.instances():
-  #  print(i.assessment_of)
+  #  print(i.has_assessment)
 
 
-onto.save(file = "handbook.owl", format = "rdfxml")
+onto.save(file = "handbook.owl", format = "owl")
