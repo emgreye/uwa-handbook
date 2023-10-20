@@ -172,8 +172,8 @@ for maj in m:
                 g.add((imajor, has_outcome, Literal(outcome)))
         if ('prerequisites' in m[maj] ):
                 g.add((imajor, has_prereq, Literal(m[maj]['prerequisites'])))
-        for course in m[maj]['courses']:
-                prereq_course = URIRef(ns[course.replace(" ","_")])
+        for icourse in m[maj]['courses']:
+                prereq_course = URIRef(ns[icourse.replace(" ","_")])
                 g.add((imajor, part_of_course, prereq_course))
                 g.add((prereq_course, RDF.type, course))
         for bridge in m[maj]['bridging']:
@@ -220,14 +220,14 @@ for uniti in u:
                         uni = URIRef(ns[un])
                         g.add((iunit, has_advisable, uni))
         if ('contact' in u[uniti] ):
-                hours = 0
+                totalhours = 0
                 for entry in u[uniti]['contact']:
-                        hours += int(u[uniti]['contact'][entry])
+                        totalhours += int(u[uniti]['contact'][entry])
                         contact = BNode()
                         g.add((iunit, has_contact, contact))
                         g.add((contact, hours, Literal(int(u[uniti]['contact'][entry]))))
                         g.add((contact, contacttype, Literal(entry)))
-                g.add((iunit, weeklyhours, Literal(hours)))
+                g.add((iunit, weeklyhours, Literal(totalhours)))
 
 # print(g.serialize(format="turtle"))
 g.serialize(destination = 'handbook.ttl', format="ttl")
