@@ -234,10 +234,11 @@ g.serialize(destination = 'handbook.ttl', format="ttl")
 
 def pretty(uri): return uri.split("/")[-1]
 
+'''  
 sg = Graph()
 with open("shaclconstraints.ttl") as f:
     sg.parse(data=f.read(), format='ttl')
-'''    
+  
 gc = Graph()
 with open("handbook copy.ttl") as f:
     gc.parse(data=f.read(), format='ttl')
