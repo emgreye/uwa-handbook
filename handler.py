@@ -293,14 +293,14 @@ def handle_query():
 				print("1. Print all units with no exams.")
 				print("2. Print all units in more than 3 majors.")
 				print("3. Print all units which include a specified phrase.")
-				queryinput = (input_handler(3))
-				if queryinput == 0:
+				queryinput = input_handler(3)
+				if queryinput == '0':
 					query1(g)
-				elif queryinput == 1:
+				elif queryinput == '1':
 					query2(g)
-				elif queryinput == 2:
+				elif queryinput == '2':
 					query3(g)
-				elif queryinput == 3:
+				elif queryinput == '3':
 					print("Please specify which phrase you want to search for.")
 					query4(g, string_input_handler(1))
 		elif input == "1":
@@ -331,8 +331,7 @@ def prompt_user():
 			report = check_constraints(g,sg)
 			print("Here is your report!\n")
 			print(report)
-  
-# Updating Graph
+
 prompt_user()
 
 
