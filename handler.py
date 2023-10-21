@@ -14,6 +14,51 @@ class bcolours:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+def input_handler(max):
+	user_input = input()
+	try:
+		x = 0 <= int(user_input) and int(user_input) <= max
+	except:
+		x = str(user_input) == "q"
+	while not x:
+		print(f"Input out of bounds, please enter a number between 0 and {max}, or q")
+		user_input = input()
+	return user_input
+
+def string_input_handler(count):
+	user_input = input()
+	while (user_input.count(', ') != count-1):
+		print(f"Please enter a string with {count} comma-space-seperated values")
+		user_input = input()
+	new_input = re.sub(r'[^a-zA-Z0-9, ]', '', user_input)
+	return new_input
+
+def query(graph):
+	invalid = True
+	while invalid:
+		string = string_input_handler(1)
+		try:
+			for row in graph.query(string):
+				print(row)
+			invalid = False
+		except:
+			print("Invalid query! Fix your query and type it again.")
+
+def queryfile(graph):
+	invalid = True
+	while invalid:
+		filename = string_input_handler(1)
+		try:
+			with open(filename, encoding='utf-8') as string:
+				try:
+					for row in graph.query(string):
+						print(row)
+				except:
+					print("Invalid syntax in file. Rewrite it.")
+			invalid = False
+		except:
+			print("Invalid directory! Type it correctly.")
+
 def query1(graph):
 	units_6_or_more_outcomes = """
 	SELECT ?unit (COUNT(?o) AS ?c)
@@ -92,7 +137,7 @@ def query3(graph):
 	for row in graph.query(more_3_maj):
 		print(f"{row.unit} is a unit in more than three majors")
                 
-def query4(word, graph):
+def query4(graph, word):
 	contains_env = """
 	SELECT ?unit
 	WHERE {
@@ -197,25 +242,6 @@ def check_constraints(graph, constraints):
 	conforms, report_graph, report_text = results
 	return report_text
 
-def input_handler(max):
-	user_input = input()
-	try:
-		x = 0 <= int(user_input) and int(user_input) <= max
-	except:
-		x = str(user_input) == "q"
-	while not x:
-		print(f"Input out of bounds, please enter a number between 0 and {max}, or q")
-		user_input = input()
-	return user_input
-
-def string_input_handler(count):
-	user_input = input()
-	while (user_input.count(', ') != count-1):
-		print(f"Please enter a string with {count} comma-space-seperated values")
-		user_input = input()
-	new_input = re.sub(r'[^a-zA-Z0-9, ]', '', user_input)
-	return new_input
-
 def update_graph():
 	input = -1
 	visited_update = False
@@ -232,7 +258,21 @@ def update_graph():
 			print(f"{bcolours.OKCYAN}subject, predicate, object{bcolours.ENDC}")
 			triple = string_input_handler(3).split(", ")
 			addnewdata(g, triple[0], triple[1], triple[2])
-
+		elif input == '3':
+			print("Please select one of the following options:\n")
+			print(f">To delete a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To delete an entity {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To delete a predicate {bcolours.BOLD}enter 2{bcolours.ENDC} \n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+			deleteinput = input_handler(2)
+			if deleteinput == '0':
+				print("Please specify the triple you'd like to delete using the following format:")
+				print(f"{bcolours.OKCYAN}subject, predicate, object{bcolours.ENDC}")
+				triple = string_input_handler(3).split(", ")
+				deleterelation(g, triple[0], triple[1], triple[2])
+			elif deleteinput == '1':
+				print("Please specify the entity you'd like to delete")
+				deleteentity(string_input_handler(1))
+			elif deletepredicate == '2':
+				print("Please specify the predicate you'd like to delete")
+				deletepredicate(string_input_handler(1))
 
 def handle_query():
 	input = -1
@@ -243,8 +283,33 @@ def handle_query():
 			visited_query = True
 		else:
 			print(f"{bcolours.UNDERLINE}Welcome back to the query handler!{bcolours.ENDC} Please select one of the following options:\n")
-	print(f">To add data/relations {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To update existing data/relations {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To remove data/relations {bcolours.BOLD}enter 2{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
-
+		print(f">To run a pre-made query {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To run a query from the terminal {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To run a query from a text file {bcolours.BOLD}enter 2{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+		input = input_handler(2)
+		if input == "0":
+			queryinput = -1
+			while (queryinput != 'q'):
+				print("Please choose a query by entering its number:")
+				print("0. Print all units with more than 6 outcomes.")
+				print("1. Print all units with no exams.")
+				print("2. Print all units in more than 3 majors.")
+				print("3. Print all units which include a specified phrase.")
+				queryinput = (input_handler(3))
+				if queryinput == 0:
+					query1(g)
+				elif queryinput == 1:
+					query2(g)
+				elif queryinput == 2:
+					query3(g)
+				elif queryinput == 3:
+					print("Please specify which phrase you want to search for.")
+					query4(g, string_input_handler(1))
+		elif input == "1":
+			print("Please write your query in SPARQL syntax.")
+			query(g)
+		elif input == "2":
+			print("Please enter the directory to your txt file.")
+			queryfile(g)
+		
 def prompt_user():
 	input = -1
 	visited = False
