@@ -37,27 +37,33 @@ def query(graph):
 	invalid = True
 	while invalid:
 		string = string_input_handler(1)
-		try:
-			for row in graph.query(string):
-				print(row)
+		if string != 'q':
+			try:
+				for row in graph.query(string):
+					print(row)
+				invalid = False
+			except:
+				print(f"Invalid query! Fix your query and type it again or {bcolours.BOLD}enter q{bcolours.ENDC} to quit.")
+		else:
 			invalid = False
-		except:
-			print("Invalid query! Fix your query and type it again.")
 
 def queryfile(graph):
 	invalid = True
 	while invalid:
 		filename = string_input_handler(1)
-		try:
-			with open(filename, encoding='utf-8') as string:
-				try:
-					for row in graph.query(string):
-						print(row)
-				except:
-					print("Invalid syntax in file. Rewrite it.")
+		if filename != 'q':
+			try:
+				with open(filename, encoding='utf-8') as string:
+					try:
+						for row in graph.query(string):
+							print(row)
+					except:
+						print("Invalid syntax in file. Rewrite the file.")
+				invalid = False
+			except:
+				print(f"Invalid directory! Type it correctly or {bcolours.BOLD}enter q{bcolours.ENDC} to quit.")
+		else:
 			invalid = False
-		except:
-			print("Invalid directory! Type it correctly.")
 
 def query1(graph):
 	units_6_or_more_outcomes = """
@@ -293,6 +299,7 @@ def handle_query():
 				print("1. Print all units with no exams.")
 				print("2. Print all units in more than 3 majors.")
 				print("3. Print all units which include a specified phrase.")
+				print(f"Or {bcolours.BOLD}enter q{bcolours.ENDC} to quit")
 				queryinput = input_handler(3)
 				if queryinput == '0':
 					query1(g)
