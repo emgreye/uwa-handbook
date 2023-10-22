@@ -52,12 +52,3 @@ ns:has_prereq
         sh:severity sh:Violation ;
         sh:message "Level less" ;
     ] .
-
-ns:Unit
-    a sh:NodeShape ;
-    sh:property [
-        sh:path ns:level ;
-        sh:datatype xsd:integer ;
-        sh:severity sh:Violation ;
-        sh:message "Level not integer" ;
-    ] .

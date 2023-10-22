@@ -103,31 +103,6 @@ WHERE {
 }
 
 	"""
-
-	level_3_not_quite = """
-	SELECT ?unit
-	WHERE {
-			?unit ns:level 3 .
-			FILTER NOT EXISTS {
-					SELECT ?unit ?assess
-					WHERE {
-							?unit ns:has_assessment ?assess .
-							FILTER (CONTAINS(?assess, "exam"))
-					} 
-			}
-	}
-
-	"""
-
-	test = """
-	SELECT ?unit ?pre
-			WHERE {
-					?unit rdf:type ns:unit .
-					?unit ns:has_prereq ?pre .
-					?pre rdf:type ns:unit .
-			}
-	"""
-
 	for row in graph.query(level_3_full):
 		print(f"{row.unit} has no exams")
                 
@@ -339,10 +314,6 @@ def readrelation(graph, subj, pred, obj):
 		print(f"({subj}, {pred}, {obj}) exists.")
 	else:
 		print(f"({subj}, {pred}, {obj}) does not exist.")
-
-sg = Graph()
-with open("shaclconstraints.ttl") as f:
-    sg.parse(data=f.read(), format='ttl')
   
 g = Graph()
 with open("handbook copy.ttl", encoding="utf8") as f:
@@ -471,10 +442,10 @@ def prompt_user():
 	visited = False
 	while input != "q":
 		if (not visited):
-			print(f"{bcolours.UNDERLINE}Welcome to the Hanbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
+			print(f"{bcolours.UNDERLINE}Welcome to the Handbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
 			visited = True
 		else:
-			print(f"{bcolours.UNDERLINE}Welcome back to the Hanbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
+			print(f"{bcolours.UNDERLINE}Welcome back to the Handbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
 		print(f">To execute queries {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To make changes to the graph {bcolours.BOLD}enter 1 {bcolours.ENDC}\n>To check constraints {bcolours.BOLD}enter 2 {bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
 		input = input_handler(2)
 		if input == "1":
@@ -484,11 +455,22 @@ def prompt_user():
 		elif(input == "2"):
 			# Checking Constraints
 			print("Checking Constraints...\n")
-			report = check_constraints(g,sg)
-			print("Here is your report!\n")
-			print(report)
+			sg = Graph()
+			with open("shaclconstraints.ttl") as f:
+				sg.parse(data=f.read(), format='ttl')
+			results = validate(
+					g,
+					shacl_graph=sg,
+					data_graph_format="ttl",
+					shacl_graph_format="ttl",
+					inference="rdfs",
+					serialize_report_graph="ttl",
+					)
+			conforms, report_graph, report_text = results
+			print(report_text)
 
 prompt_user()
-
+print("Saving updated graph...")
+g.serialize(destination = 'handbook.ttl', format="ttl")
 
 
