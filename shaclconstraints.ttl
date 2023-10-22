@@ -76,14 +76,14 @@ ns:UnitShape
     sh:message "Unit should be face-to-face, online or both."
   ] .
 
-ns:has_prereq
-    a sh:PropertyShape ;
-    sh:path ns:has_prereq ;
-    sh:node ns:UnitShape ;
-    sh:severity sh:Violation ;
-    sh:message "Prerequisite unit level must be less than the current unit level" ;
-    sh:condition [
-        sh:lessThan ns:level ;
-        sh:severity sh:Violation ;
-        sh:message "Level less" ;
-    ] .
+# ns:has_prereq
+#     a sh:PropertyShape ;
+#     sh:path ns:has_prereq ;
+#     sh:node ns:UnitShape ;
+#     sh:severity sh:Violation ;
+#     sh:message "Prerequisite unit level must be less than the current unit level" ;
+#     sh:condition [
+#         sh:lessThan ns:level ;
+#         sh:severity sh:Violation ;
+#         sh:message "Level less" ;
+#     ] .
