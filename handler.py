@@ -310,16 +310,35 @@ def update_graph():
 			print(f">To read a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To read all relations of an entity {bcolours.BOLD}enter 1{bcolours.ENDC}\n>To read all relations of a predicate {bcolours.BOLD}enter 2{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
 			readinput = input_handler(2)
 			if readinput == '0':
-				print("Please specify the triple you'd like to delete using the following format:")
+				print("Please specify the triple you'd like to read using the following format:")
 				print(f"{bcolours.OKCYAN}subject, predicate, object{bcolours.ENDC}")
 				triple = string_input_handler(3).split(", ")
 				readrelation(g, triple[0], triple[1], triple[2])
 			elif readinput == '1':
-				print("Please specify the entity you'd like to delete")
-				readentity(string_input_handler(1))
+				print("Please specify the entity you'd like to read")
+				readentity(g, string_input_handler(1))
 			elif readinput == '2':
-				print("Please specify the predicate you'd like to delete")
-				readpredicate(string_input_handler(1))
+				print("Please specify the predicate you'd like to read")
+				readpredicate(g, string_input_handler(1))
+		elif input == '2':
+			print("Please select one of the following options:\n")
+			print(f">To update a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To update an entity {bcolours.BOLD}enter 1{bcolours.ENDC}\n>To update a predicate {bcolours.BOLD}enter 2{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+			updateinput = input_handler(2)
+			if updateinput == '0':
+				print("Please specify the triple you'd like to update using the following format:")
+				print(f"{bcolours.OKCYAN}originalSubject, originalPredicate, originalObject, newSubject, newPredicate, newObject{bcolours.ENDC}")
+				triple = string_input_handler(6).split(", ")
+				updaterelation(g, triple[0], triple[1], triple[2],triple[3],triple[4],triple[5])
+			elif updateinput == '1':
+				print("Please specify the entity you'd like to update using the following format:")
+				print(f"{bcolours.OKCYAN}originalEntity, newEntity{bcolours.ENDC}")
+				newold = string_input_handler(2)
+				updateentity(g, newold[0], newold[1])
+			elif updateinput == '2':
+				print("Please specify the predicate you'd like to update using the following format:")
+				print(f"{bcolours.OKCYAN}originalPredicate, newPredicate{bcolours.ENDC}")
+				newold = string_input_handler(2)
+				updatepredicate(g, newold[0], newold[1])
 		elif input == '3':
 			print("Please select one of the following options:\n")
 			print(f">To delete a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To delete an entity {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To delete a predicate {bcolours.BOLD}enter 2{bcolours.ENDC} \n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
@@ -331,10 +350,10 @@ def update_graph():
 				deleterelation(g, triple[0], triple[1], triple[2])
 			elif deleteinput == '1':
 				print("Please specify the entity you'd like to delete")
-				deleteentity(string_input_handler(1))
+				deleteentity(g, string_input_handler(1))
 			elif deleteinput == '2':
 				print("Please specify the predicate you'd like to delete")
-				deletepredicate(string_input_handler(1))
+				deletepredicate(g, string_input_handler(1))
 
 def handle_query():
 	input = -1
