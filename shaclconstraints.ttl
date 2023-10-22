@@ -41,7 +41,7 @@ ns:UnitShape
     ];
   sh:property [
     sh:path ns:has_school ;
-    sh:class ns:unit ;
+    sh:class ns:school ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
     sh:severity sh:violation ;
@@ -49,7 +49,7 @@ ns:UnitShape
   ] ; 
   sh:property [
     sh:path ns:has_board ;
-    sh:class ns:unit ;
+    sh:class ns:board ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
     sh:severity sh:violation ;
@@ -57,7 +57,6 @@ ns:UnitShape
   ] ; 
   sh:property [
     sh:path ns:level ;
-    sh:class ns:unit ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
     sh:severity sh:violation ;
@@ -65,7 +64,6 @@ ns:UnitShape
   ] ; 
   sh:property [
     sh:path ns:credit ;
-    sh:class ns:unit ;
     sh:minCount 1 ;
     sh:maxCount 1 ;
     sh:severity sh:violation ;
@@ -73,12 +71,11 @@ ns:UnitShape
   ] ; 
   sh:property [
     sh:path ns:has_mode ;
-    sh:class ns:unit ;
-    sh:minCount 1 ;
+    sh:in (ns:Face_to_face ns:Online ns:Both) ;
     sh:severity sh:violation ;
-    sh:message "Unit should have at least 1 mode."
+    sh:message "Unit should be face-to-face, online or both."
   ] .
-  
+
 ns:has_prereq
     a sh:PropertyShape ;
     sh:path ns:has_prereq ;
