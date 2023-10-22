@@ -129,10 +129,6 @@ def query4(graph, word):
 	} GROUP BY ?unit
 	"""
 
-
-	#for row in g.query(more_3_maj):
-	#        print(f"{row.unit} is in {row.c} majors")
-
 	value = word
 
 	for row in graph.query(contains_keyword.replace("word", value)):
