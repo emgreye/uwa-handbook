@@ -123,4 +123,18 @@ for uniti in u:
 # print(g.serialize(format="turtle"))
 g.serialize(destination = 'handbook.ttl', format="ttl")
 
+sg = Graph()
+with open("shaclconstraints.ttl") as f:
+        sg.parse(data=f.read(), format='ttl')
+results = validate(
+                g,
+                shacl_graph=sg,
+                data_graph_format="ttl",
+                shacl_graph_format="ttl",
+                inference="rdfs",
+                serialize_report_graph="ttl",
+                )
+conforms, report_graph, report_text = results
+print(report_text)
+
 

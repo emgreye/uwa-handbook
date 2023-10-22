@@ -302,7 +302,7 @@ def readrelation(graph, subj, pred, obj):
 		print(f"({subj}, {pred}, {obj}) does not exist.")
   
 g = Graph()
-with open("handbook copy.ttl", encoding="utf8") as f:
+with open("handbook.ttl", encoding="utf8") as f:
     g.parse(data=f.read(), format='ttl')
 url = "https://www.example.com/"
 ns = Namespace(url)
