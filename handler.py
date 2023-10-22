@@ -23,6 +23,10 @@ def input_handler(max):
 	while not x:
 		print(f"Input out of bounds, please enter a number between 0 and {max}, or q")
 		user_input = input()
+		try:
+			x = 0 <= int(user_input) and int(user_input) <= max
+		except:
+			x = str(user_input) == "q"
 	return user_input
 
 def string_input_handler(count):
@@ -302,7 +306,7 @@ def readrelation(graph, subj, pred, obj):
 		print(f"({subj}, {pred}, {obj}) does not exist.")
   
 g = Graph()
-with open("shaclconstraints.ttl", encoding="utf8") as f:
+with open("handbook.ttl", encoding="utf8") as f:
     g.parse(data=f.read(), format='ttl')
 url = "https://www.example.com/"
 ns = Namespace(url)
