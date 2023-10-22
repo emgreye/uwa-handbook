@@ -119,16 +119,6 @@ def query3(graph):
 		print(f"{row.unit} is a unit in more than three majors")
                 
 def query4(graph, word):
-	contains_env = """
-	SELECT ?unit
-	WHERE {
-			?unit ns:desc ?descr .
-			?unit ns:has_outcome ?out .
-			?unit rdf:type ns:unit .
-			FILTER (CONTAINS(?descr, "environmental policy") || CONTAINS(?out, "environmental policy"))
-	} GROUP BY ?unit
-	"""
-
 	contains_keyword = """
 	SELECT ?unit ?value
 	WHERE {
