@@ -225,6 +225,80 @@ def deleterelation(graph, subj, pred, obj):
 	graph.query(delete)
 	print(f"({subj},{pred},{obj}) has been deleted.")
 
+def updateentity(graph, oldEntity, newEntity):
+	read = f"""
+	SELECT ?pred ?obj
+	WHERE {{
+		ns:{oldEntity} ?pred ?obj . 
+	}}
+	"""
+	read2 = f"""
+	SELECT ?pred ?obj
+	WHERE {{
+		?subj ?pred {oldEntity} . 
+	}}
+	"""
+	
+	for row in graph.query(read):
+		graph.query(f"""
+								INSERT DATA {{
+									ns:{newEntity} ns:{row.pred} ns:{row.obj} .
+								}}
+								""")
+		graph.query(f"""
+								DELETE DATA {{
+									ns:{newEntity} ns:{row.pred} ns:{row.obj} .
+								}}
+								""")
+	for row in graph.query(read2):
+		graph.query(f"""
+								INSERT DATA {{
+									ns:{row.subj} ns:{row.pred} ns:{newEntity} .
+								}}
+								""")
+		graph.query(f"""
+								DELETE DATA {{
+									ns:{row.subj} ns:{row.pred} ns:{newEntity} .
+								}}
+								""")
+	print(f"{oldEntity} has been replaced with {newEntity}.")
+
+def updatepredicate(graph, oldPred, newPred):
+	read = f"""
+	SELECT ?pred ?obj
+	WHERE {{
+		?subj ns:{oldPred} ?obj . 
+	}}
+	"""
+	
+	for row in graph.query(read):
+		graph.query(f"""
+								INSERT DATA {{
+									ns:{row.subj} ns:{newPred} ns:{row.obj} .
+								}}
+								""")
+		graph.query(f"""
+								DELETE DATA {{
+									ns:{row.subj} ns:{newPred} ns:{row.obj} .
+								}}
+								""")
+	print(f"{oldPred} has been replaced with {newPred}.")
+
+def deleterelation(graph, oldSubj, oldPred, oldObj, newSubj, newPred, newObj):
+	delete = f"""
+	DELETE DATA {{
+		ns:{oldSubj} ns:{oldPred} ns:{oldObj} . 
+	}}
+	"""
+	add = f"""
+	INSERT DATA {{
+		ns:{newSubj} ns:{newPred} ns:{newObj} .
+	}}
+	"""
+	graph.query(delete)
+	graph.query(add)
+	print(f"({oldSubj},{oldPred},{oldObj}) has been replaced by ({newSubj},{newPred},{newObj}).")
+
 def readentity(graph, entity):
 	read = f"""
 	SELECT ?pred ?obj
@@ -332,13 +406,13 @@ def update_graph():
 			elif updateinput == '1':
 				print("Please specify the entity you'd like to update using the following format:")
 				print(f"{bcolours.OKCYAN}originalEntity, newEntity{bcolours.ENDC}")
-				newold = string_input_handler(2)
-				updateentity(g, newold[0], newold[1])
+				oldnew = string_input_handler(2)
+				updateentity(g, oldnew[0], oldnew[1])
 			elif updateinput == '2':
 				print("Please specify the predicate you'd like to update using the following format:")
 				print(f"{bcolours.OKCYAN}originalPredicate, newPredicate{bcolours.ENDC}")
-				newold = string_input_handler(2)
-				updatepredicate(g, newold[0], newold[1])
+				oldnew = string_input_handler(2)
+				updatepredicate(g, oldnew[0], oldnew[1])
 		elif input == '3':
 			print("Please select one of the following options:\n")
 			print(f">To delete a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To delete an entity {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To delete a predicate {bcolours.BOLD}enter 2{bcolours.ENDC} \n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
@@ -401,11 +475,11 @@ def prompt_user():
 			visited = True
 		else:
 			print(f"{bcolours.UNDERLINE}Welcome back to the Hanbook Handler!{bcolours.ENDC} Please select one of the following options:\n")
-		print(f">To make updates to the graph {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To execute queries {bcolours.BOLD}enter 1 {bcolours.ENDC}\n>To check constraints {bcolours.BOLD}enter 2 {bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+		print(f">To execute queries {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To make changes to the graph {bcolours.BOLD}enter 1 {bcolours.ENDC}\n>To check constraints {bcolours.BOLD}enter 2 {bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
 		input = input_handler(2)
-		if input == "0":
+		if input == "1":
 			update_graph()
-		elif(input == "1"):
+		elif(input == "0"):
 			handle_query()
 		elif(input == "2"):
 			# Checking Constraints
