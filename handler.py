@@ -30,7 +30,7 @@ def string_input_handler(count):
 	while (user_input.count(', ') != count-1):
 		print(f"Please enter a string with {count} comma-space-seperated values")
 		user_input = input()
-	new_input = re.sub(r'[^a-zA-Z0-9, ]', '', user_input)
+	new_input = re.sub(r'[^a-zA-Z0-9, -_]', '', user_input)
 	return new_input
 
 def query(graph):
@@ -284,7 +284,7 @@ def updatepredicate(graph, oldPred, newPred):
 								""")
 	print(f"{oldPred} has been replaced with {newPred}.")
 
-def deleterelation(graph, oldSubj, oldPred, oldObj, newSubj, newPred, newObj):
+def updaterelation(graph, oldSubj, oldPred, oldObj, newSubj, newPred, newObj):
 	delete = f"""
 	DELETE DATA {{
 		ns:{oldSubj} ns:{oldPred} ns:{oldObj} . 
