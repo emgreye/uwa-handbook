@@ -120,13 +120,5 @@ with onto:
 
   sync_reasoner_pellet(infer_property_values=True, infer_data_property_values=True)
 
-  for i in Major.instances():
-    print(i)
-    try: print(i.has_unit_text)
-    except: print("No texts")
-
-  #for i in Unit.instances():
-  #  print(i.has_assessment)
-
 
 onto.save(file = "handbook.owl", format = "owl")
