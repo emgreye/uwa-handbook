@@ -225,6 +225,47 @@ def deleterelation(graph, subj, pred, obj):
 	graph.query(delete)
 	print(f"({subj},{pred},{obj}) has been deleted.")
 
+def readentity(graph, entity):
+	read = f"""
+	SELECT ?pred ?obj
+	WHERE {{
+		ns:{entity} ?pred ?obj . 
+	}}
+	"""
+	read2 = f"""
+	SELECT ?pred ?obj
+	WHERE {{
+		?subj ?pred {entity} . 
+	}}
+	"""
+	
+	for row in graph.query(read):
+		print(f"{entity}, {row.pred}, {row.obj}")
+	for row in graph.query(read2):
+		print(f"{row.subj}, {row.pred}, {entity}")
+
+def readpredicate(graph, pred):
+	read = f"""
+	SELECT ?subj ?obj
+	WHERE {{
+		?subj ns:{pred} ?obj . 
+	}}
+	"""
+	for row in graph.query(read):
+		print(f"{row.subj}, {pred}, {row.obj}")
+
+def readrelation(graph, subj, pred, obj):
+	read = f"""
+	SELECT *
+	WHERE {{
+		ns:{subj} ns:{pred} ns:{obj} . 
+	}}
+	"""
+	if len(graph.query(read)) > 0:
+		print(f"({subj}, {pred}, {obj}) exists.")
+	else:
+		print(f"({subj}, {pred}, {obj}) does not exist.")
+
 sg = Graph()
 with open("shaclconstraints.ttl") as f:
     sg.parse(data=f.read(), format='ttl')
@@ -264,6 +305,21 @@ def update_graph():
 			print(f"{bcolours.OKCYAN}subject, predicate, object{bcolours.ENDC}")
 			triple = string_input_handler(3).split(", ")
 			addnewdata(g, triple[0], triple[1], triple[2])
+		elif input == '1':
+			print("Please select one of the following options:\n")
+			print(f">To read a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To read all relations of an entity {bcolours.BOLD}enter 1{bcolours.ENDC}\n>To read all relations of a predicate {bcolours.BOLD}enter 2{bcolours.ENDC}\n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
+			readinput = input_handler(2)
+			if readinput == '0':
+				print("Please specify the triple you'd like to delete using the following format:")
+				print(f"{bcolours.OKCYAN}subject, predicate, object{bcolours.ENDC}")
+				triple = string_input_handler(3).split(", ")
+				readrelation(g, triple[0], triple[1], triple[2])
+			elif readinput == '1':
+				print("Please specify the entity you'd like to delete")
+				readentity(string_input_handler(1))
+			elif readinput == '2':
+				print("Please specify the predicate you'd like to delete")
+				readpredicate(string_input_handler(1))
 		elif input == '3':
 			print("Please select one of the following options:\n")
 			print(f">To delete a relation {bcolours.BOLD}enter 0{bcolours.ENDC} \n>To delete an entity {bcolours.BOLD}enter 1{bcolours.ENDC} \n>To delete a predicate {bcolours.BOLD}enter 2{bcolours.ENDC} \n>To quit {bcolours.BOLD}enter q{bcolours.ENDC}")
@@ -276,7 +332,7 @@ def update_graph():
 			elif deleteinput == '1':
 				print("Please specify the entity you'd like to delete")
 				deleteentity(string_input_handler(1))
-			elif deletepredicate == '2':
+			elif deleteinput == '2':
 				print("Please specify the predicate you'd like to delete")
 				deletepredicate(string_input_handler(1))
 
