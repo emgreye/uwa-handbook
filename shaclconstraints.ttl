@@ -38,9 +38,47 @@ ns:UnitShape
       sh:datatype xsd:integer ;
       sh:severity sh:Violation ;
       sh:message "Level not integer" ;
+    ];
+  sh:property [
+    sh:path ns:has_school ;
+    sh:class ns:unit ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:violation ;
+    sh:message "Unit should belong to exactly 1 school."
+  ] ; 
+  sh:property [
+    sh:path ns:has_board ;
+    sh:class ns:unit ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:violation ;
+    sh:message "Unit should belong to exactly 1 board."
+  ] ; 
+  sh:property [
+    sh:path ns:level ;
+    sh:class ns:unit ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:violation ;
+    sh:message "Unit should have exactly 1 level."
+  ] ; 
+  sh:property [
+    sh:path ns:credit ;
+    sh:class ns:unit ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:severity sh:violation ;
+    sh:message "Unit should have exactly 1 amount of credits."
+  ] ; 
+  sh:property [
+    sh:path ns:has_mode ;
+    sh:class ns:unit ;
+    sh:minCount 1 ;
+    sh:severity sh:violation ;
+    sh:message "Unit should have at least 1 mode."
   ] .
-
-
+  
 ns:has_prereq
     a sh:PropertyShape ;
     sh:path ns:has_prereq ;
